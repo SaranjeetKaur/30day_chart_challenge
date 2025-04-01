@@ -1,2 +1,2 @@
-shinylive::export("app", "site")
-httpuv::runStaticServer("site/")
+shinylive::export("app", "docs")
+httpuv::runStaticServer("docs/")
