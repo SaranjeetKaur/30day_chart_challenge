@@ -11,6 +11,9 @@ ui <- fluidPage(
 
     # Sidebar panel for inputs ----
     sidebarPanel(
+      markdown(
+        "The 30 Day Chart Challenge encourages to create a data visualization based on a daily prompt throughout the month of April. There are 5 major categories, namely, comparisons, distributions, relationships, timeseries, and uncertainties. My contributions to this challenge are available on [GitHub](https://github.com/SaranjeetKaur/30day_chart_challenge)."
+      ),
 
       # Input: Slider for the number of bins ----
       sliderInput(inputId = "bins",
