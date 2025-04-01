@@ -1,10 +1,7 @@
 library(shiny)
-library(shinythemes)
 
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(
-  
-  theme = shinytheme("superhero"),
 
   # App title ----
   titlePanel("30 Day Chart Challenge"),
