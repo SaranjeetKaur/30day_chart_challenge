@@ -25,8 +25,8 @@ p <- ggplot2::ggplot(
   )
 ) +
   ggplot2::geom_col(width = 0.8, fill = "steelblue") +
-  ggplot2::xlab("Share of Global Production (%)") +
-  ggplot2::ylab("Entity") +
+  ggplot2::ylab("Share of Global Production (%)") +
+  ggplot2::xlab("Entity") +
   ggplot2::coord_flip() +
   ggplot2::scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
   ggthemes::theme_wsj() +
