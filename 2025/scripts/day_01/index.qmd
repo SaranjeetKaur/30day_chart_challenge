@@ -1,0 +1,44 @@
+---
+execute:
+  eval: true
+  echo: false
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+# Data: https://ourworldindata.org/explorers/minerals?tab=table&country=AUS~CHL~IND&Mineral=Iron&Metric=Production&Type=Smelter%2C+pig+iron&Share+of+global=true
+# Category: Comparisons
+# Prompt: Fractions
+
+# Read the iron_production_as_share_of_global_total.csv file
+iron_share <- read.csv("iron_production_as_share_of_global_total.csv", header = TRUE)
+
+# animated plot year vs share
+
+p <- ggplot2::ggplot(
+  iron_share,
+  ggplot2::aes(
+    x = Entity,
+    y = share_of_global_production
+  )
+) +
+  ggplot2::geom_col(width = 0.8, fill = "steelblue") +
+  ggplot2::xlab("Share of Global Production (%)") +
+  ggplot2::ylab("Entity") +
+  ggplot2::coord_flip() +
+  ggplot2::scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+  ggthemes::theme_wsj() +
+  ggthemes::scale_color_wsj("colors6") +
+  ggplot2::ggtitle("Share of Global Iron Production for {frame_time}", ) +
+  ggplot2::theme(
+    panel.grid.major = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank(),
+    plot.title=ggplot2::element_text(size=15),
+    axis.title=ggplot2::element_text(size=13)
+  ) +
+  gganimate::transition_time(Year)
+
+gganimate::animate(p, renderer = gganimate::gifski_renderer(file = "../../viz/day_01/iron_share.gif"))
+```
