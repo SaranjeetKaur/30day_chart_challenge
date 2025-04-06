@@ -1,0 +1,53 @@
+
+---
+execute:
+  eval: true
+  echo: false
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+# Data: https://ourworldindata.org/grapher/country-level-monthly-temperature-anomalies?tab=table&time=2000..2024&showSelectionOnlyInTable=1
+# Category: Comparisons
+# Prompt: Florence Nightingale (theme day)
+
+# Read the monthly_temperature_anomalies.csv file
+monthly_temperature_anomalies <- read.csv("monthly_temperature_anomalies.csv", header = TRUE)
+
+# Order months correctly
+monthly_temperature_anomalies$month <- factor(
+  monthly_temperature_anomalies$month,
+  levels = c("January", "February", "March", "April", "May", "June",
+             "July", "August", "September", "October", "November", "December"
+))
+
+sysfonts::font_add_google("Tangerine")
+showtext::showtext_auto()
+
+# Create 2 rose plots one for 2021 and one for 2024
+p <- ggplot2::ggplot(monthly_temperature_anomalies, 
+                 ggplot2::aes(x = month, y = temperature_anomaly)) +
+  ggplot2::geom_col(ggplot2::aes(fill = entity), width = 1, position = "identity", colour="grey", size=0.1) +
+  ggplot2::coord_polar() +
+  ggplot2::facet_wrap(~ year) +
+  ggplot2::scale_fill_manual(values = c("lightblue", "lightpink")) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(
+    title = "Monthly Temperature Anomalies (2023 and 2024)",
+    x = "",
+    y = "Temperature Anomaly (°C)"
+  ) +
+  ggplot2::theme(
+    text = ggplot2::element_text(family = "Tangerine", size = 19),
+    axis.ticks.x = ggplot2::element_blank(),
+    panel.grid.major = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank(),
+    plot.background = element_rect(fill = alpha("lightyellow", 0.5)),
+    legend.position = "bottom",
+  )
+
+ggplot2::ggsave("day_06.png", plot = p, path = "../../viz/", 
+                width = 13, height = 8, dpi = 50)
+```
