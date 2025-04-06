@@ -1,0 +1,102 @@
+---
+execute:
+  eval: true
+  echo: false
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+# Data: https://ourworldindata.org/grapher/yearly-number-of-objects-launched-into-outer-space?tab=table&time=2020..latest&showSelectionOnlyInTable=1&country=USA~CHN~GBR~FRA~RUS~IND~JPN~European+Space+Agency~DEU
+# Category: Comparisons
+# Prompt: Circular
+
+# Read the objects_outer_space.csv file
+objects_outer_space <- read.csv("subset_objects_outer_space.csv", header = TRUE)
+
+# Set a number of 'empty bar' to add at the end of each group
+empty_bar <- 3
+to_add <- data.frame( matrix(NA, empty_bar*nlevels(objects_outer_space$group), ncol(objects_outer_space)) )
+colnames(to_add) <- colnames(objects_outer_space)
+to_add$entity <- rep(levels(objects_outer_space$entity), each=empty_bar)
+objects_outer_space <- rbind(objects_outer_space, to_add)
+objects_outer_space <- objects_outer_space %>% arrange(entity)
+objects_outer_space$id <- seq(1, nrow(objects_outer_space))
+
+# Get the name and the y position of each label
+label_data <- objects_outer_space
+number_of_bar <- nrow(label_data)
+angle <- 90 - 360 * (label_data$id-0.5) /number_of_bar
+label_data$hjust <- ifelse( angle < -90, 1, 0)
+label_data$angle <- ifelse(angle < -90, angle+180, angle)
+
+# prepare a data frame for base lines
+base_data <- objects_outer_space %>% 
+  group_by(entity) %>% 
+  summarize(start=min(id), end=max(id) - empty_bar) %>% 
+  rowwise() %>% 
+  mutate(title=mean(c(start, end)))
+ 
+# prepare a data frame for grid (scales)
+grid_data <- base_data
+grid_data$end <- grid_data$end[ c( nrow(grid_data), 1:nrow(grid_data)-1)] + 1
+grid_data$start <- grid_data$start - 1
+grid_data <- grid_data[-1,]
+
+# plot
+p <- ggplot2::ggplot(objects_outer_space, 
+                     ggplot2::aes(x=as.factor(id), y=annual_number_of_objects_launched_into_outer_space, fill=entity)) +
+  
+  ggplot2::geom_bar(ggplot2::aes(x=as.factor(id),
+                    y=annual_number_of_objects_launched_into_outer_space,
+                    fill=entity), stat="identity", alpha=0.5) +
+  
+  ggplot2::geom_segment(data=grid_data, 
+                        ggplot2::aes(x = end, y = 40, xend = start, 
+                                     yend = 40), 
+                        colour = "grey", alpha=1,
+                        size=0.3 , inherit.aes = FALSE ) +
+  ggplot2::geom_segment(data=grid_data, 
+                        ggplot2::aes(x = end, y = 30, xend = start, 
+                                     yend = 30), 
+                        colour = "grey", alpha=1,
+                        size=0.3 , inherit.aes = FALSE ) +
+  ggplot2::geom_segment(data=grid_data, 
+                        ggplot2::aes(x = end, y = 20, xend = start, 
+                                     yend = 20), 
+                        colour = "grey", alpha=1, 
+                        size=0.3 , inherit.aes = FALSE ) +
+  ggplot2::geom_segment(data=grid_data, 
+                        ggplot2::aes(x = end, y = 10, xend = start, 
+                                     yend = 10), 
+                        colour = "grey", alpha=1, 
+                        size=0.3 , inherit.aes = FALSE ) +
+  
+  ggplot2::annotate("text", x = rep(max(objects_outer_space$id),4), y = c(10, 20, 30, 40), label = c("10", "20", "30", "40") , color="grey", size=2 , angle=0, fontface="bold", hjust=1) +
+  
+  ggplot2::geom_bar(ggplot2::aes(x=as.factor(id), y=annual_number_of_objects_launched_into_outer_space, fill=entity), stat="identity", alpha=0.5) +
+  
+  ylim(-100,120) +
+  ggthemes::theme_economist() +
+  ggplot2::theme(
+    legend.position = "none",
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    plot.title = element_text(size=11)
+  ) +
+  
+  ggplot2::ggtitle("Yearly Number of Objects Launched into Outer Space: 2020-2024 (Subset)") +
+  ggplot2::coord_polar() + 
+  
+  ggplot2::geom_text(data=label_data, ggplot2::aes(x=id, y=annual_number_of_objects_launched_into_outer_space+10, label=year, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=2.5, angle= label_data$angle, inherit.aes = FALSE ) +
+  
+  # Add base line information
+  ggplot2::geom_segment(data=base_data, ggplot2::aes(x = start, y = -3, xend = end, yend = -3), colour = "black", alpha=0.8, size=0.6 , inherit.aes = FALSE )  +
+  ggplot2::geom_text(data=base_data, ggplot2::aes(x = title, y = -18, label=entity), colour = "black", alpha=0.8, size=3, inherit.aes = FALSE)
+
+p
+
+ggplot2::ggsave("day_03.png", plot = p, path = "../../viz/", dpi = 300, width = 8, height = 6, units = "in")
+```

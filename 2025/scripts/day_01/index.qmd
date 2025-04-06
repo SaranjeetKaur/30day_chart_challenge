@@ -40,5 +40,5 @@ p <- ggplot2::ggplot(
   ) +
   gganimate::transition_time(Year)
 
-gganimate::animate(p, renderer = gganimate::gifski_renderer(file = "../../viz/day_01/iron_share.gif"))
+gganimate::animate(p, renderer = gganimate::gifski_renderer(file = "../../viz/day_01.gif"))
 ```

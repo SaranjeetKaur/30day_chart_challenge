@@ -1,0 +1,51 @@
+---
+execute:
+  eval: true
+  echo: false
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+# Data: https://ourworldindata.org/explorers/minerals?tab=table&country=AUS~CHL~IND&Mineral=Iron&Metric=Production&Type=Smelter%2C+pig+iron&Share+of+global=true
+# Category: Comparisons
+# Prompt: Slope
+
+# Read the iron_production_as_share_of_global_total.csv file
+iron_share <- read.csv("subset_iron_production_as_share_of_global_total.csv", header = TRUE)
+
+p <- ggplot2::ggplot(iron_share, 
+                ggplot2::aes(x = Year, y = share_of_global_production,
+                             group = Entity)) +
+  ggplot2::geom_line(ggplot2::aes(color = Entity), linewidth = 1.2) +
+  ggplot2::geom_point(size = 3) +
+  ggplot2::geom_text(data = iron_share %>% filter(Year == 2020),
+            ggplot2::aes(label = paste0(share_of_global_production, "%")),
+            hjust = 1.1, size = 3) +
+  ggplot2::geom_text(data = iron_share %>% filter(Year == 2021),
+            ggplot2::aes(label = paste0(share_of_global_production, "%")),
+            hjust = 1.1, size = 3) +
+  ggplot2::geom_text(data = iron_share %>% filter(Year == 2022),
+            ggplot2::aes(label = paste0(share_of_global_production, "%")),
+            hjust = 1.1, size = 3) +
+  ggplot2::geom_text(data = iron_share %>% filter(Year == 2023),
+            ggplot2::aes(label = paste0(share_of_global_production, "%")),
+            hjust = -0.1, size = 3) +
+  ggplot2::scale_x_continuous(breaks = c(2020, 2021, 2022, 2023), limits = c(2019.5, 2023.5)) +
+  ggthemes::theme_economist() +
+  ggplot2::labs(
+    title = "Share of Global Iron Production 2020-2023 (Subset)",
+    x = "Year",
+    y = "Share (%)"
+  ) +
+  ggplot2::theme(
+    panel.grid.major = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank()
+  ) +
+  ggplot2::theme(legend.position = "right")
+
+# Save the plot as a PNG file
+ggplot2::ggsave("day_02.png", plot = p, path = "../../viz/")
+
+```
